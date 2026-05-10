@@ -19,11 +19,13 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 20
-          cache: "yarn"
+          cache: "pnpm"
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
       - name: Install dependencies
-        run: yarn install
+        run: pnpm install
       - name: Build static files
-        run: yarn build
+        run: pnpm build
       - name: Build the Kids Games Docker image
         run: |
           docker build . --tag ghcr.io/jbatch/kids-games:latest
