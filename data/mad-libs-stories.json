@@ -1,0 +1,133 @@
+[
+  {
+    "title": "Space Mission",
+    "emoji": "🚀",
+    "template": "Once upon a time, a brave [CHARACTER] put on a shiny suit and jumped into a [VEHICLE]. They flew past a [PLACE] and spotted a giant [OBJECT] floating in space. They [VERB] all the way home and had [FOOD] for dinner.",
+    "blanks": [
+      {"type": "character", "count": "singular", "label": "Who is the brave explorer?"},
+      {"type": "vehicle",   "count": "singular", "label": "What do they fly in?"},
+      {"type": "place",     "count": "singular", "label": "What do they fly past?"},
+      {"type": "object",    "count": "singular", "label": "What floats in space?"},
+      {"type": "verb",                           "label": "How do they travel home?"},
+      {"type": "food",      "count": "plural",   "label": "What's for dinner?"}
+    ]
+  },
+  {
+    "title": "Magic Forest",
+    "emoji": "🌲",
+    "template": "Deep in a magical [PLACE], a tiny [CREATURE] found a [OBJECT]. They [VERB] three times and a [ADJ] dragon appeared! The dragon gave them some [FOOD] and they became best friends forever.",
+    "blanks": [
+      {"type": "place",    "count": "singular", "label": "Where is the magic forest?"},
+      {"type": "creature", "count": "singular", "label": "Who finds the magic thing?"},
+      {"type": "object",   "count": "singular", "label": "What did they find?"},
+      {"type": "verb",                          "label": "What do they do to make magic?"},
+      {"type": "adj",                           "label": "What kind of dragon?"},
+      {"type": "food",     "count": "plural",   "label": "What does the dragon share?"}
+    ]
+  },
+  {
+    "title": "Birthday Surprise",
+    "emoji": "🎂",
+    "template": "It was [CHARACTER]'s birthday! Their friend, a [CREATURE], [VERB] through the door carrying a huge [OBJECT]. Everyone ate [FOOD] and a [ADJ] [CHARACTER] sang happy birthday!",
+    "blanks": [
+      {"type": "character", "count": "singular", "label": "Whose birthday is it?"},
+      {"type": "creature",  "count": "singular", "label": "Who is the surprise guest?"},
+      {"type": "verb",                           "label": "How do they arrive?"},
+      {"type": "object",    "count": "singular", "label": "What do they bring?"},
+      {"type": "food",      "count": "plural",   "label": "What does everyone eat?"},
+      {"type": "adj",                            "label": "What kind of singer?"},
+      {"type": "character", "count": "singular", "label": "Who sings?"}
+    ]
+  },
+  {
+    "title": "Ocean Adventure",
+    "emoji": "🌊",
+    "template": "A [ADJ] [CREATURE] dived into the deep blue sea. They swam past a [SEA] and a sparkly [SEA]. Suddenly a friendly [SEA] invited them to a party and they [VERB] until it was time to go home.",
+    "blanks": [
+      {"type": "adj",                           "label": "What kind of adventurer?"},
+      {"type": "creature", "count": "singular", "label": "Who dives in?"},
+      {"type": "sea",      "count": "singular", "label": "First sea creature they pass?"},
+      {"type": "sea",      "count": "singular", "label": "What else do they see?"},
+      {"type": "sea",      "count": "singular", "label": "Who throws the party?"},
+      {"type": "verb",                          "label": "What do they do at the party?"}
+    ]
+  },
+  {
+    "title": "Superhero Day",
+    "emoji": "🦸",
+    "template": "[CHARACTER] put on a [ADJ] cape and flew over the city. They spotted a [CREATURE] stuck in a [PLACE]! The superhero [VERB] very fast and saved the day. Everyone cheered and gave them [FOOD].",
+    "blanks": [
+      {"type": "character", "count": "singular", "label": "Who is the superhero?"},
+      {"type": "adj",                            "label": "What kind of cape?"},
+      {"type": "creature",  "count": "singular", "label": "Who needs rescuing?"},
+      {"type": "place",     "count": "singular", "label": "Where are they stuck?"},
+      {"type": "verb",                           "label": "How do they save the day?"},
+      {"type": "food",      "count": "plural",   "label": "What's the reward?"}
+    ]
+  },
+  {
+    "title": "Bedtime Story",
+    "emoji": "🌙",
+    "template": "It was bedtime and [CHARACTER] was very sleepy. Their mum brought a [ADJ] [OBJECT] and a cup of warm [DRINK]. They [VERB] softly and soon a [CREATURE] came to visit in their dreams.",
+    "blanks": [
+      {"type": "character", "count": "singular", "label": "Who is going to sleep?"},
+      {"type": "adj",                            "label": "What kind?"},
+      {"type": "object",    "count": "singular", "label": "What did mum bring?"},
+      {"type": "drink",                          "label": "What warm drink?"},
+      {"type": "verb",                           "label": "What did they do?"},
+      {"type": "creature",  "count": "singular", "label": "Who visits in their dreams?"}
+    ]
+  },
+  {
+    "title": "Treasure Hunt",
+    "emoji": "🗺️",
+    "template": "A [CHARACTER] found an old map leading to treasure. They crossed a [PLACE] and climbed a [CLIMBABLE]. At the top, a [ADJ] chest was guarded by a tiny [CREATURE]. They shared some [FOOD] and opened the treasure together!",
+    "blanks": [
+      {"type": "character", "count": "singular", "label": "Who finds the map?"},
+      {"type": "place",     "count": "singular", "label": "What do they cross?"},
+      {"type": "climbable", "count": "singular", "label": "What do they climb?"},
+      {"type": "adj",                            "label": "What kind of chest?"},
+      {"type": "creature",  "count": "singular", "label": "Who guards the treasure?"},
+      {"type": "food",      "count": "plural",   "label": "What do they share?"}
+    ]
+  },
+  {
+    "title": "Rainy Day",
+    "emoji": "🌧️",
+    "template": "On a rainy day, [CHARACTER] and their pet [ANIMAL] were stuck inside. They decided to [VERB] and build a cosy fort. Inside the fort they ate [FOOD] and read stories about a [ADJ] [CHARACTER].",
+    "blanks": [
+      {"type": "character", "count": "singular", "label": "Who is stuck inside?"},
+      {"type": "animal",    "count": "singular", "label": "What is their pet?"},
+      {"type": "verb",                           "label": "What do they do first?"},
+      {"type": "food",      "count": "plural",   "label": "What snacks do they eat?"},
+      {"type": "adj",                            "label": "What kind of story character?"},
+      {"type": "character", "count": "singular", "label": "Who is the story about?"}
+    ]
+  },
+  {
+    "title": "Cooking Time",
+    "emoji": "👨‍🍳",
+    "template": "Chef [CHARACTER] decided to make a delicious [FOOD]. First they added a [OBJECT] and a sprinkle of [ADJ] magic. The [CHARACTER] who tasted it [VERB] with joy! Everyone agreed it was the best thing ever.",
+    "blanks": [
+      {"type": "character", "count": "singular", "label": "Who is the chef?"},
+      {"type": "food",      "count": "singular", "label": "What are they cooking?"},
+      {"type": "object",    "count": "singular", "label": "Secret ingredient?"},
+      {"type": "adj",                            "label": "What kind of magic?"},
+      {"type": "character", "count": "singular", "label": "Who is the first taster?"},
+      {"type": "verb",                           "label": "How do they react?"}
+    ]
+  },
+  {
+    "title": "School Day",
+    "emoji": "🏫",
+    "template": "[CHARACTER] arrived at school and sat next to a [ADJ] [CHARACTER]. Their teacher, a friendly [CHARACTER], asked everyone to [VERB] for the class. At lunch they ate [FOOD] and made a brand new friend!",
+    "blanks": [
+      {"type": "character", "count": "singular", "label": "Who goes to school?"},
+      {"type": "adj",                            "label": "What kind of classmate?"},
+      {"type": "character", "count": "singular", "label": "Who is the new classmate?"},
+      {"type": "character", "count": "singular", "label": "Who is the teacher?"},
+      {"type": "verb",                           "label": "What does everyone do?"},
+      {"type": "food",      "count": "plural",   "label": "What's for lunch?"}
+    ]
+  }
+]

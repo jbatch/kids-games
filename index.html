@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌟 Play Time!</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  background: #0d0d2b;
+  overflow-x: hidden;
+  user-select: none;
+}
+
+/* ── Starfield ── */
+#stars {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse at 20% 30%, #1a1a5e 0%, #0d0d2b 60%);
+}
+.star {
+  position: absolute; border-radius: 50%; background: white;
+  animation: twinkle ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%,100% { opacity: .15; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.6); }
+}
+
+/* ── Layout ── */
+.wrap {
+  position: relative; z-index: 1;
+  max-width: 860px; margin: 0 auto;
+  padding: 60px 24px 80px;
+  display: flex; flex-direction: column; align-items: center; gap: 48px;
+}
+
+/* ── Header ── */
+.header { text-align: center; }
+.header h1 {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: clamp(3rem, 10vw, 6rem);
+  color: #FFD700;
+  line-height: 1;
+  animation: glow 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(255,213,0,.4));
+}
+@keyframes glow {
+  0%,100% { filter: drop-shadow(0 0 20px rgba(255,213,0,.4)); }
+  50%      { filter: drop-shadow(0 0 60px rgba(255,213,0,.9)); }
+}
+.header p {
+  margin-top: 12px;
+  font-size: clamp(1rem, 3vw, 1.3rem);
+  font-weight: 800;
+  color: rgba(255,255,255,.6);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+/* ── Game grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+/* ── Cards ── */
+.card {
+  display: block;
+  text-decoration: none;
+  border-radius: 28px;
+  padding: 32px 28px;
+  border: 3px solid rgba(255,255,255,.15);
+  position: relative; overflow: hidden;
+  transition: transform .2s, box-shadow .2s;
+  cursor: pointer;
+}
+.card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,.07);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 24px 64px rgba(0,0,0,.5); }
+.card:hover::after { opacity: 1; }
+.card:active { transform: scale(.97); }
+
+.card-1 { background: linear-gradient(135deg, #FF6B9D 0%, #C84B31 100%); }
+.card-2 { background: linear-gradient(135deg, #54A0FF 0%, #1DD1A1 100%); }
+.card-3 { background: linear-gradient(135deg, #FFA552 0%, #F9CA24 100%); }
+.card-4 { background: linear-gradient(135deg, #C77DFF 0%, #FF85A1 100%); }
+
+.badge {
+  position: absolute; top: 18px; right: 18px;
+  background: rgba(255,255,255,.25);
+  border-radius: 20px; padding: 4px 14px;
+  font-size: .72rem; font-weight: 900;
+  letter-spacing: .07em; text-transform: uppercase;
+  color: white;
+}
+
+.card-icon { font-size: 3.8rem; display: block; margin-bottom: 14px; }
+.card-title {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 1.9rem; color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,.2);
+  margin-bottom: 10px;
+}
+.card-body {
+  font-size: .95rem; font-weight: 700;
+  color: rgba(255,255,255,.88);
+  line-height: 1.55;
+}
+
+/* ── Footer ── */
+.footer {
+  color: rgba(255,255,255,.25);
+  font-size: .8rem; font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+
+<div class="wrap">
+  <header class="header">
+    <h1>🌟 Play Time! 🌟</h1>
+    <p>Pick a game to play</p>
+  </header>
+
+  <div class="grid">
+    <a class="card card-1" href="mouse-adventure.html">
+      <span class="badge">Ages 3+</span>
+      <span class="card-icon">🐭</span>
+      <div class="card-title">Mouse Adventure</div>
+      <div class="card-body">Learn to use the mouse! Move, click, double-click, and drag your way through 5 fun levels.</div>
+    </a>
+
+    <a class="card card-2" href="letter-hunt.html">
+      <span class="badge">Ages 3+</span>
+      <span class="card-icon">🔍</span>
+      <div class="card-title">Letter Hunt</div>
+      <div class="card-body">Listen for the letter, then click it on the screen. How many can you find?</div>
+    </a>
+
+    <a class="card card-3" href="letter-keyboard.html">
+      <span class="badge">Ages 4+</span>
+      <span class="card-icon">⌨️</span>
+      <div class="card-title">Letter Keyboard</div>
+      <div class="card-body">Hear a letter and press it on the keyboard. Race against the timer for extra challenge!</div>
+    </a>
+
+    <a class="card card-4" href="emoji-mad-libs.html">
+      <span class="badge">Ages 3+</span>
+      <span class="card-icon">📖</span>
+      <div class="card-title">Emoji Stories</div>
+      <div class="card-body">Pick emoji words to fill in silly stories, then hear them read aloud!</div>
+    </a>
+
+    <a class="card card-1" href="platformer.html" style="background: linear-gradient(135deg, #43B89C 0%, #2D6A9F 100%);">
+      <span class="badge">Ages 4+</span>
+      <span class="card-icon">🪙</span>
+      <div class="card-title">Coin Climber</div>
+      <div class="card-body">Jump across platforms, collect all the coins, and reach the door! Arrow keys to move, Space to jump.</div>
+    </a>
+  </div>
+
+  <footer class="footer">Made with ❤️ for little learners</footer>
+</div>
+
+<script>
+// Generate starfield
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 120; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const size = Math.random() * 3 + 1;
+  s.style.cssText = `
+    width:${size}px; height:${size}px;
+    left:${Math.random()*100}%; top:${Math.random()*100}%;
+    animation-duration:${2 + Math.random()*4}s;
+    animation-delay:${Math.random()*4}s;
+  `;
+  starsEl.appendChild(s);
+}
+</script>
+</body>
+</html>

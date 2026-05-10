@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emoji Stories! 📖</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --pink: #FF85A1; --purple: #C77DFF; --blue: #54A0FF;
+  --green: #1DD1A1; --orange: #FFA552; --yellow: #FFD700;
+}
+body {
+  font-family: 'Nunito', sans-serif;
+  background: linear-gradient(160deg, #a8edea 0%, #fed6e3 50%, #ffecd2 100%);
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; padding: 20px; overflow-x: hidden;
+}
+/* Blob bg */
+body::before {
+  content:''; position:fixed; top:-150px; left:-150px;
+  width:400px; height:400px;
+  background:radial-gradient(circle, rgba(255,213,79,.2) 0%,transparent 70%);
+  border-radius:50%; animation:blob1 8s ease-in-out infinite; pointer-events:none;
+}
+body::after {
+  content:''; position:fixed; bottom:-100px; right:-100px;
+  width:350px; height:350px;
+  background:radial-gradient(circle, rgba(199,125,255,.2) 0%,transparent 70%);
+  border-radius:50%; animation:blob2 10s ease-in-out infinite; pointer-events:none;
+}
+@keyframes blob1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.1)}}
+@keyframes blob2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-50px,-30px) scale(1.15)}}
+
+.wrap {
+  position:relative; z-index:1; width:100%;
+  max-width:800px; display:flex; flex-direction:column; align-items:center; gap:20px;
+}
+
+/* Header */
+.title {
+  font-family:'Fredoka One',sans-serif;
+  font-size:clamp(2rem,7vw,3.5rem); color:#2D1B69;
+  text-align:center; text-shadow:0 3px 12px rgba(45,27,105,.15);
+}
+
+/* ── STORY SELECT ── */
+#story-select { width:100%; }
+.story-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:14px;
+}
+.story-card {
+  background:white; border-radius:20px; padding:22px 18px;
+  cursor:pointer; transition:transform .2s, box-shadow .2s;
+  border:3px solid transparent; text-align:center;
+  box-shadow:0 4px 20px rgba(0,0,0,.08);
+}
+.story-card:hover { transform:translateY(-4px); box-shadow:0 12px 32px rgba(0,0,0,.12); }
+.story-card .s-emoji { font-size:2.8rem; display:block; margin-bottom:8px; }
+.story-card .s-title { font-family:'Fredoka One',sans-serif; font-size:1.2rem; color:#2D1B69; }
+
+/* ── GAME SCREEN ── */
+#game-screen { width:100%; display:none; flex-direction:column; align-items:center; gap:20px; }
+
+/* Story display */
+#story-box {
+  background:white; border-radius:24px; padding:28px 28px;
+  box-shadow:0 8px 32px rgba(0,0,0,.1); width:100%; line-height:2;
+  font-size:clamp(1.1rem,3vw,1.4rem); font-weight:700; color:#2D1B69;
+}
+.blank {
+  display:inline-block;
+  background:linear-gradient(135deg,var(--pink),var(--purple));
+  border-radius:8px; padding:2px 12px;
+  color:white; animation:blankPulse 1.2s ease-in-out infinite;
+  font-size:1.1em;
+}
+.filled {
+  display:inline-block;
+  background:linear-gradient(135deg,var(--green),var(--blue));
+  border-radius:8px; padding:2px 12px; color:white;
+  animation:none;
+}
+@keyframes blankPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+
+/* Choice prompt */
+#prompt-area { text-align:center; font-family:'Fredoka One',sans-serif; font-size:1.3rem; color:#2D1B69; }
+
+/* Choice buttons */
+#choices {
+  display:flex; gap:14px; flex-wrap:wrap; justify-content:center;
+}
+.choice-btn {
+  background:white; border:3px solid #eee;
+  border-radius:20px; padding:14px 24px;
+  font-family:'Nunito',sans-serif; font-weight:800;
+  font-size:clamp(1.2rem,4vw,1.6rem);
+  cursor:pointer; transition:all .15s;
+  box-shadow:0 4px 16px rgba(0,0,0,.08);
+  display:flex; flex-direction:column; align-items:center; gap:4px; min-width:100px;
+}
+.choice-btn:hover { transform:scale(1.08) translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.15); }
+.choice-btn:active { transform:scale(.96); }
+.choice-btn .c-emoji { font-size:2.4rem; }
+.choice-btn .c-word  { font-size:.9rem; color:#666; }
+
+/* ── FINISH SCREEN ── */
+#finish-screen { width:100%; display:none; flex-direction:column; align-items:center; gap:20px; }
+#finished-story {
+  background:white; border-radius:24px; padding:28px;
+  box-shadow:0 8px 32px rgba(0,0,0,.1); width:100%;
+  line-height:2; font-size:clamp(1.1rem,3vw,1.4rem);
+  font-weight:700; color:#2D1B69;
+}
+#read-btn {
+  background:linear-gradient(135deg,var(--pink),var(--purple));
+  color:white; border:none; border-radius:50px;
+  padding:16px 48px; font-family:'Fredoka One',sans-serif;
+  font-size:1.4rem; cursor:pointer;
+  box-shadow:0 8px 24px rgba(255,133,161,.4);
+  transition:transform .2s;
+}
+#read-btn:hover { transform:scale(1.05); }
+.reading { animation:readPulse 1s ease-in-out infinite; }
+@keyframes readPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+
+#play-again {
+  background:white; color:#2D1B69; border:3px solid #eee;
+  border-radius:50px; padding:12px 36px;
+  font-family:'Fredoka One',sans-serif; font-size:1.2rem;
+  cursor:pointer; transition:all .2s;
+}
+#play-again:hover { background:#2D1B69; color:white; }
+
+/* Confetti */
+.confetti-piece {
+  position:fixed; width:12px; height:12px; pointer-events:none; z-index:9999; top:0;
+  animation:cfall ease-in forwards;
+}
+@keyframes cfall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+/* Home */
+.home-btn {
+  position:fixed; bottom:20px; left:20px; z-index:1000;
+  background:rgba(255,255,255,.85); backdrop-filter:blur(8px);
+  border:2px solid rgba(0,0,0,.1); border-radius:50px;
+  padding:10px 22px; font-family:'Nunito',sans-serif;
+  font-size:1rem; font-weight:800; color:#2D1B69;
+  cursor:pointer; text-decoration:none;
+  box-shadow:0 4px 16px rgba(0,0,0,.15); transition:all .2s;
+}
+.home-btn:hover { transform:scale(1.05); background:white; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1 class="title">📖 Emoji Stories!</h1>
+
+  <!-- Story selection -->
+  <div id="story-select">
+    <div class="story-grid" id="story-grid"></div>
+  </div>
+
+  <!-- Game screen -->
+  <div id="game-screen">
+    <div id="story-box"></div>
+    <div id="prompt-area">Pick a word!</div>
+    <div id="choices"></div>
+  </div>
+
+  <!-- Finish screen -->
+  <div id="finish-screen">
+    <div id="finished-story"></div>
+    <button id="read-btn">🔊 Read My Story!</button>
+    <button id="play-again">🔄 New Story</button>
+  </div>
+</div>
+
+<a class="home-btn" href="index.html">🏠 Home</a>
+
+<script type="module">
+import STORIES from './data/mad-libs-stories.json';
+import WORD_BANKS from './data/mad-libs-words.json';
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let curStory = null, blanks = [], filledWords = [], curBlankIdx = 0;
+let speaking = false;
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function wordForm(entry, count) {
+  if (count === 'plural' && entry.plural) return entry.plural;
+  return entry.singular;
+}
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - .5); }
+
+// ── BUILD STORY GRID ─────────────────────────────────────────────────────────
+const grid = document.getElementById('story-grid');
+STORIES.forEach((s, i) => {
+  const card = document.createElement('div');
+  card.className = 'story-card';
+  card.innerHTML = `<span class="s-emoji">${s.emoji}</span><div class="s-title">${s.title}</div>`;
+  card.addEventListener('click', () => startStory(i));
+  grid.appendChild(card);
+});
+
+function startStory(idx) {
+  curStory = STORIES[idx];
+  blanks = curStory.blanks;
+  filledWords = [];
+  curBlankIdx = 0;
+  document.getElementById('story-select').style.display = 'none';
+  const gs = document.getElementById('game-screen');
+  gs.style.display = 'flex';
+  renderStory();
+  showChoices();
+}
+
+function renderStory() {
+  const box = document.getElementById('story-box');
+  const parts = curStory.template.split(/\[([A-Z]+)\]/);
+  let blankCount = 0;
+  let html = '';
+  parts.forEach(part => {
+    if (/^[A-Z]+$/.test(part)) {
+      const idx = blankCount++;
+      if (idx < filledWords.length) {
+        const word = wordForm(filledWords[idx], blanks[idx].count);
+        html += `<span class="filled">${filledWords[idx].emoji} ${word}</span>`;
+      } else if (idx === filledWords.length) {
+        html += `<span class="blank">___?___</span>`;
+      } else {
+        html += `<span class="blank" style="opacity:.4">___</span>`;
+      }
+    } else {
+      html += part;
+    }
+  });
+  box.innerHTML = html;
+}
+
+function showChoices() {
+  if (curBlankIdx >= blanks.length) { finish(); return; }
+  const blank = blanks[curBlankIdx];
+  document.getElementById('prompt-area').textContent = blank.label || 'Pick a word!';
+  const pool = WORD_BANKS[blank.type] || WORD_BANKS.character;
+  const choices = shuffle(pool).slice(0, 3);
+  const container = document.getElementById('choices');
+  container.innerHTML = '';
+  choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="c-emoji">${choice.emoji}</span><span class="c-word">${choice.singular}</span>`;
+    btn.addEventListener('click', () => pick(choice));
+    container.appendChild(btn);
+  });
+}
+
+function pick(choice) {
+  filledWords.push(choice);
+  curBlankIdx++;
+  renderStory();
+  if (curBlankIdx < blanks.length) {
+    showChoices();
+  } else {
+    setTimeout(finish, 400);
+  }
+}
+
+function finish() {
+  spawnConfetti();
+  document.getElementById('game-screen').style.display = 'none';
+  const fs = document.getElementById('finish-screen');
+  fs.style.display = 'flex';
+  const parts = curStory.template.split(/\[([A-Z]+)\]/);
+  let blankCount = 0;
+  let html = '';
+  parts.forEach(part => {
+    if (/^[A-Z]+$/.test(part)) {
+      const idx = blankCount++;
+      const w = filledWords[idx];
+      const word = wordForm(w, blanks[idx].count);
+      html += `<span class="filled">${w.emoji} ${word}</span>`;
+    } else {
+      html += part;
+    }
+  });
+  document.getElementById('finished-story').innerHTML = html;
+}
+
+function buildPlainText() {
+  const parts = curStory.template.split(/\[([A-Z]+)\]/);
+  let blankCount = 0;
+  return parts.map(part => {
+    if (/^[A-Z]+$/.test(part)) {
+      const idx = blankCount++;
+      return wordForm(filledWords[idx], blanks[idx]?.count) || '';
+    }
+    return part;
+  }).join('');
+}
+
+function readStory() {
+  if (!('speechSynthesis' in window)) return;
+  const btn = document.getElementById('read-btn');
+  if (speaking) {
+    speechSynthesis.cancel();
+    speaking = false;
+    btn.textContent = '🔊 Read My Story!';
+    btn.classList.remove('reading');
+    return;
+  }
+  btn.textContent = '⏹ Stop';
+  btn.classList.add('reading');
+  speaking = true;
+  const u = new SpeechSynthesisUtterance(buildPlainText());
+  u.rate = .8; u.pitch = 1.2;
+  const voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
+  if (voices.length) u.voice = voices.find(v => /female/i.test(v.name)) || voices[0];
+  u.onend = () => {
+    speaking = false;
+    btn.classList.remove('reading');
+    btn.textContent = '🔊 Read My Story Again!';
+  };
+  speechSynthesis.speak(u);
+}
+
+function goHome() {
+  speechSynthesis.cancel();
+  document.getElementById('finish-screen').style.display = 'none';
+  document.getElementById('story-select').style.display = 'block';
+}
+
+function spawnConfetti() {
+  const colors = ['#FF85A1','#FFD700','#C77DFF','#7BC67E','#87CEEB','#FFA552'];
+  for (let i = 0; i < 60; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.background = colors[~~(Math.random() * colors.length)];
+      p.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+      p.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+      p.style.animationDelay = Math.random() * .5 + 's';
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 3500);
+    }, i * 30);
+  }
+}
+
+document.getElementById('read-btn').addEventListener('click', readStory);
+document.getElementById('play-again').addEventListener('click', goHome);
+
+if ('speechSynthesis' in window) {
+  speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+}
+</script>
+</body>
+</html>

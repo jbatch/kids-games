@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coin Climber! 🪙</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #1a1a2e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Nunito', sans-serif;
+  user-select: none;
+  overflow: hidden;
+}
+#game-container canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+.home-btn {
+  position: fixed; bottom: 20px; left: 20px; z-index: 1000;
+  background: rgba(255,255,255,.85); backdrop-filter: blur(8px);
+  border: 2px solid rgba(0,0,0,.1); border-radius: 50px;
+  padding: 10px 22px; font-family: 'Nunito', sans-serif;
+  font-size: 1rem; font-weight: 800; color: #2D1B69;
+  cursor: pointer; text-decoration: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15); transition: all .2s;
+}
+.home-btn:hover { transform: scale(1.05); background: white; }
+</style>
+</head>
+<body>
+<div id="game-container"></div>
+<a class="home-btn" href="index.html">🏠 Home</a>
+
+<script type="module">
+import Phaser from '/node_modules/phaser/dist/phaser.esm.js';
+
+// ── Palette ────────────────────────────────────────────────
+const C = {
+  sky:        0x87CEEB,
+  skyBottom:  0x5aB4DE,
+  ground:     0x5AAB3A,
+  groundEdge: 0x3D7A28,
+  platform:   0xE8A44A,
+  platformEdge: 0xC07830,
+  coin:       0xFFD700,
+  coinShine:  0xFFF176,
+  door:       0x8B4513,
+  doorFrame:  0x5C2D0A,
+  doorGlow:   0x00FF88,
+  player:     0xFF6B9D,
+  playerEye:  0xFFFFFF,
+  text:       0xFFFFFF,
+  shadow:     0x00000050,
+};
+
+// ── Level definitions ───────────────────────────────────────
+// Coords in tiles (TILE=40px). worldW/worldH = full world size.
+// Viewport is 800×600 (20×15 tiles) and follows the player.
+// Jump physics: gravity 1000, jumpV -540 → max height ~3.5 tiles,
+// max horizontal reach ~6 tiles at full speed.
+
+const TILE = 40;
+
+const LEVELS = [
+  // ── Level 1: flat ground, just walk right ──────────────────
+  {
+    bg: 0x87CEEB, worldW: 20, worldH: 15,
+    platforms: [{ x:0, y:13, w:20 }],
+    coins: [{ x:4,y:12 },{ x:8,y:12 },{ x:12,y:12 },{ x:16,y:12 }],
+    door:  { x:17, y:12 },
+    start: { x:1,  y:12 },
+    label: 'Level 1',
+  },
+  // ── Level 2: first gaps — same height, gap=2 ───────────────
+  {
+    bg: 0x87CEEB, worldW: 34, worldH: 16,
+    platforms: [
+      { x:0,  y:13, w:6 },
+      { x:8,  y:13, w:6 },   // gap: 2
+      { x:16, y:13, w:6 },   // gap: 2
+      { x:24, y:13, w:10 },  // gap: 2
+    ],
+    coins: [{ x:2,y:12 },{ x:4,y:12 },{ x:9,y:12 },{ x:12,y:12 },{ x:17,y:12 },{ x:20,y:12 },{ x:27,y:12 },{ x:31,y:12 }],
+    door:  { x:31, y:12 },
+    start: { x:1,  y:12 },
+    label: 'Level 2',
+  },
+  // ── Level 3: staircase — gap=2, step up 2 each time ────────
+  {
+    bg: 0x6EB5FF, worldW: 30, worldH: 24,
+    platforms: [
+      { x:0,  y:21, w:5 },
+      { x:7,  y:19, w:4 },   // gap:2, up:2
+      { x:13, y:17, w:4 },   // gap:2, up:2
+      { x:19, y:15, w:4 },   // gap:2, up:2
+      { x:25, y:13, w:5 },   // gap:2, up:2
+    ],
+    coins: [{ x:2,y:20 },{ x:8,y:18 },{ x:14,y:16 },{ x:20,y:14 },{ x:26,y:12 },{ x:28,y:12 }],
+    door:  { x:27, y:12 },
+    start: { x:1,  y:20 },
+    label: 'Level 3',
+  },
+  // ── Level 4: long horizontal run, gaps 2-3, height varies ──
+  {
+    bg: 0x5588BB, worldW: 48, worldH: 18,
+    platforms: [
+      { x:0,  y:14, w:5 },
+      { x:7,  y:12, w:4 },   // gap:2, up:2
+      { x:13, y:14, w:4 },   // gap:1, down:2
+      { x:20, y:13, w:3 },   // gap:3, up:1
+      { x:25, y:11, w:4 },   // gap:2, up:2
+      { x:31, y:14, w:4 },   // gap:2, down:3
+      { x:37, y:12, w:3 },   // gap:2, up:2
+      { x:42, y:14, w:6 },   // gap:2, down:2
+    ],
+    coins: [{ x:2,y:13 },{ x:8,y:11 },{ x:14,y:13 },{ x:21,y:12 },{ x:26,y:10 },{ x:28,y:10 },{ x:32,y:13 },{ x:38,y:11 },{ x:44,y:13 },{ x:46,y:13 }],
+    door:  { x:45, y:13 },
+    start: { x:1,  y:13 },
+    label: 'Level 4',
+  },
+  // ── Level 5: tall zigzag — climb with backtracking ─────────
+  {
+    bg: 0x334477, worldW: 32, worldH: 30,
+    platforms: [
+      { x:0,  y:27, w:5 },
+      { x:7,  y:24, w:3 },   // gap:2, up:3
+      { x:3,  y:21, w:3 },   // back left, up:3
+      { x:9,  y:18, w:3 },   // gap:3, up:3
+      { x:13, y:15, w:3 },   // gap:1, up:3
+      { x:8,  y:12, w:3 },   // back left, up:3
+      { x:14, y:9,  w:3 },   // gap:3, up:3
+      { x:19, y:7,  w:3 },   // gap:2, up:2
+      { x:25, y:5,  w:7 },   // gap:3, up:2 — final pad
+    ],
+    coins: [{ x:2,y:26 },{ x:8,y:23 },{ x:4,y:20 },{ x:10,y:17 },{ x:14,y:14 },{ x:9,y:11 },{ x:15,y:8 },{ x:20,y:6 },{ x:27,y:4 }],
+    door:  { x:29, y:4 },
+    start: { x:1,  y:26 },
+    label: 'Level 5',
+  },
+  // ── Level 6: precision — narrow platforms, gaps 2-4 ────────
+  {
+    bg: 0x1A1040, worldW: 52, worldH: 20,
+    platforms: [
+      { x:0,  y:16, w:4 },
+      { x:6,  y:14, w:2 },   // gap:2, up:2, narrow!
+      { x:10, y:12, w:2 },   // gap:2, up:2
+      { x:14, y:10, w:2 },   // gap:2, up:2
+      { x:18, y:12, w:2 },   // gap:2, down:2
+      { x:23, y:10, w:2 },   // gap:3, up:2
+      { x:27, y:8,  w:2 },   // gap:2, up:2
+      { x:31, y:11, w:2 },   // gap:2, down:3
+      { x:36, y:8,  w:2 },   // gap:3, up:3
+      { x:40, y:10, w:2 },   // gap:2, down:2
+      { x:45, y:7,  w:2 },   // gap:3, up:3
+      { x:48, y:5,  w:4 },   // gap:1, up:2 — finish
+    ],
+    coins: [{ x:7,y:13 },{ x:11,y:11 },{ x:15,y:9 },{ x:19,y:11 },{ x:24,y:9 },{ x:28,y:7 },{ x:32,y:10 },{ x:37,y:7 },{ x:41,y:9 },{ x:46,y:6 },{ x:49,y:4 }],
+    door:  { x:49, y:4 },
+    start: { x:1,  y:15 },
+    label: 'Level 6',
+  },
+  // ── Level 7: enemies — patrol timing required ──────────────
+  {
+    bg: 0x0D1B2A, worldW: 46, worldH: 16,
+    platforms: [
+      { x:0,  y:13, w:5 },   // safe start
+      { x:7,  y:11, w:7 },   // enemy 1 patrols (gap:2, up:2)
+      { x:16, y:13, w:5 },   // safe landing  (gap:2, down:2)
+      { x:23, y:10, w:6 },   // enemy 2 patrols (gap:2, up:3)
+      { x:31, y:12, w:4 },   // safe landing   (gap:2, down:2)
+      { x:37, y:10, w:4 },   // enemy 3 patrols (gap:2, up:2)
+      { x:43, y:12, w:3 },   // finish (gap:2, down:2)
+    ],
+    enemies: [
+      { x:9,  platformY:11, minX:7,  maxX:13, speed:90  },
+      { x:25, platformY:10, minX:23, maxX:28, speed:110 },
+      { x:38, platformY:10, minX:37, maxX:40, speed:80  },
+    ],
+    coins: [
+      { x:2, y:12 }, { x:11, y:10 }, { x:18, y:12 },
+      { x:26, y:9  }, { x:32, y:11 }, { x:44, y:11 },
+    ],
+    door:  { x:44, y:11 },
+    start: { x:1,  y:12 },
+    label: 'Level 7',
+  },
+];
+
+// ── Helper: tile px center ──────────────────────────────────
+function tx(col) { return col * TILE + TILE / 2; }
+function ty(row) { return row * TILE + TILE / 2; }
+
+// ── Scenes ─────────────────────────────────────────────────
+
+class BootScene extends Phaser.Scene {
+  constructor() { super('Boot'); }
+  create() {
+    // Draw all textures programmatically
+    makeTextures(this);
+    this.scene.start('Game', { level: 0 });
+  }
+}
+
+class GameScene extends Phaser.Scene {
+  constructor() { super('Game'); }
+
+  init(data) {
+    this.levelIndex    = data.level ?? 0;
+    this.coinsLeft     = 0;
+    this.doorOpen      = false;
+    this._transitioning = false;
+  }
+
+  create() {
+    const lvl = LEVELS[this.levelIndex];
+    const WW = lvl.worldW * TILE, WH = lvl.worldH * TILE;
+
+    // Background fills the whole world
+    this.cameras.main.setBackgroundColor(lvl.bg);
+
+    // Physics world — extra height below for death fall
+    this.physics.world.setBounds(0, 0, WW, WH + TILE * 8);
+
+    // Camera follows player, bounded to world
+    this.cameras.main.setBounds(0, 0, WW, WH);
+
+    // ── Platforms ──
+    this.platforms = this.physics.add.staticGroup();
+    for (const p of lvl.platforms) {
+      for (let col = p.x; col < p.x + p.w; col++) {
+        this.platforms.create(tx(col), ty(p.y), 'platform_tile');
+      }
+    }
+
+    // ── Coins ──
+    this.coinGroup = this.physics.add.staticGroup();
+    for (const c of lvl.coins) {
+      const coin = this.coinGroup.create(tx(c.x), ty(c.y), 'coin');
+      coin.body.setCircle(14, 2, 2);
+      this.coinsLeft++;
+    }
+    this.coinsTotalThisLevel = this.coinsLeft;
+
+    // ── Door ──
+    this.doorSprite = this.physics.add.staticImage(
+      tx(lvl.door.x), ty(lvl.door.y) - TILE/2, 'door_closed'
+    );
+    this.doorSprite.body.setSize(TILE - 8, TILE * 2 - 4);
+
+    // ── Player ──
+    this.player = this.physics.add.sprite(tx(lvl.start.x), ty(lvl.start.y) - TILE/2, 'player');
+    this.player.setCollideWorldBounds(false);  // manual death check instead
+    this.player.body.setSize(28, 36);
+    this.player.body.setOffset(6, 4);
+
+    this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
+
+    // ── Enemies ──
+    this.enemyGroup = this.physics.add.group();
+    for (const e of (lvl.enemies || [])) {
+      const enemy = this.physics.add.sprite(tx(e.x), ty(e.platformY) - TILE, 'enemy');
+      enemy.body.allowGravity = false;
+      enemy.body.setSize(28, 34);
+      enemy.body.setOffset(6, 4);
+      enemy.setVelocityX(e.speed);
+      enemy.patrolMin   = tx(e.minX);
+      enemy.patrolMax   = tx(e.maxX);
+      enemy.patrolSpeed = e.speed;
+      this.enemyGroup.add(enemy);
+    }
+
+    // ── Physics overlaps ──
+    this.physics.add.collider(this.player, this.platforms);
+    this.physics.add.overlap(this.player, this.coinGroup, this.collectCoin, null, this);
+    this.physics.add.overlap(this.player, this.doorSprite, this.enterDoor, this.canEnterDoor, this);
+    this.physics.add.overlap(this.player, this.enemyGroup, this.hitEnemy, null, this);
+
+    // ── Keyboard ──
+    this.cursors = this.input.keyboard.createCursorKeys();
+    this.wasd    = this.input.keyboard.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes.W,
+      left: Phaser.Input.Keyboard.KeyCodes.A,
+      right: Phaser.Input.Keyboard.KeyCodes.D,
+    });
+    this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+    // ── HUD ──
+    this.hud = this.add.group();
+    this.coinText = this.add.text(16, 12, `🪙 ${this.coinsTotalThisLevel - this.coinsLeft} / ${this.coinsTotalThisLevel}`, {
+      fontFamily: 'Fredoka One',
+      fontSize: '26px',
+      color: '#FFFFFF',
+      stroke: '#000000',
+      strokeThickness: 4,
+    }).setDepth(10).setScrollFactor(0);
+
+    this.levelText = this.add.text(784, 12, lvl.label, {
+      fontFamily: 'Fredoka One',
+      fontSize: '26px',
+      color: '#FFD700',
+      stroke: '#000000',
+      strokeThickness: 4,
+    }).setDepth(10).setScrollFactor(0).setOrigin(1, 0);
+
+    // Controls hint (first level only)
+    if (this.levelIndex === 0) {
+      this.hint = this.add.text(400, 572, '⬅ ➡ Arrow keys to move   ⬆ or SPACE to jump', {
+        fontFamily: 'Nunito',
+        fontSize: '18px',
+        fontStyle: 'bold',
+        color: '#FFFFFF',
+        stroke: '#000000',
+        strokeThickness: 3,
+      }).setDepth(10).setScrollFactor(0).setOrigin(0.5, 1);
+      this.time.delayedCall(5000, () => { if (this.hint) this.hint.destroy(); });
+    }
+
+    // Door hint
+    this.doorHint = this.add.text(400, 572, '🎉 Get to the door!', {
+      fontFamily: 'Fredoka One',
+      fontSize: '22px',
+      color: '#00FF88',
+      stroke: '#000000',
+      strokeThickness: 4,
+    }).setDepth(10).setScrollFactor(0).setOrigin(0.5, 1).setVisible(false);
+  }
+
+  collectCoin(player, coin) {
+    coin.destroy();
+    this.coinsLeft--;
+    this.coinText.setText(`🪙 ${this.coinsTotalThisLevel - this.coinsLeft} / ${this.coinsTotalThisLevel}`);
+
+    // Sparkle effect
+    this.spawnSparkle(coin.x, coin.y);
+
+    if (this.coinsLeft <= 0) {
+      this.doorOpen = true;
+      this.doorSprite.setTexture('door_open');
+      this.tweens.add({
+        targets: this.doorSprite,
+        scaleX: 1.15, scaleY: 1.15,
+        yoyo: true, duration: 200, repeat: 2,
+      });
+      this.doorHint.setVisible(true);
+      this.time.delayedCall(3000, () => { if (this.doorHint) this.doorHint.setVisible(false); });
+    }
+  }
+
+  canEnterDoor() { return this.doorOpen; }
+
+  hitEnemy(player, enemy) {
+    if (this._transitioning) return;
+    this._transitioning = true;
+    this.player.body.enable = false;
+    this.cameras.main.shake(150, 0.015);
+    this.cameras.main.flash(400, 255, 50, 50);
+    this.time.delayedCall(500, () => this.scene.restart({ level: this.levelIndex }));
+  }
+
+  enterDoor(player, door) {
+    if (this._transitioning) return;
+    this._transitioning = true;
+    this.player.setVelocity(0, 0);
+    this.player.body.enable = false;
+
+    this.cameras.main.flash(300, 255, 255, 255);
+    const next = this.levelIndex + 1;
+    this.time.delayedCall(400, () => {
+      if (next >= LEVELS.length) {
+        this.showWinScreen();
+      } else {
+        this.showLevelClear(next);
+      }
+    });
+  }
+
+  showLevelClear(nextLevel) {
+    // All overlay objects use setScrollFactor(0) so they sit in screen space
+    const cx = 400, cy = 300;
+    this.add.rectangle(cx, cy, 800, 600, 0x000000, 0.75).setDepth(20).setScrollFactor(0);
+    this.add.text(cx, cy - 80, '🎉', { fontSize: '80px' }).setDepth(21).setOrigin(0.5).setScrollFactor(0);
+    this.add.text(cx, cy, 'Amazing!', {
+      fontFamily: 'Fredoka One', fontSize: '64px',
+      color: '#FFD700', stroke: '#000', strokeThickness: 6,
+    }).setDepth(21).setOrigin(0.5).setScrollFactor(0);
+    this.add.text(cx, cy + 80, `Get ready for Level ${nextLevel + 1}...`, {
+      fontFamily: 'Fredoka One', fontSize: '28px',
+      color: '#FFFFFF', stroke: '#000', strokeThickness: 4,
+    }).setDepth(21).setOrigin(0.5).setScrollFactor(0);
+
+    this.time.delayedCall(2000, () => this.scene.restart({ level: nextLevel }));
+  }
+
+  showWinScreen() {
+    const cx = 400, cy = 300;
+    this.add.rectangle(cx, cy, 800, 600, 0x1a1a2e).setDepth(20).setScrollFactor(0);
+    this.add.text(cx, cy - 100, '🏆', { fontSize: '100px' }).setDepth(21).setOrigin(0.5).setScrollFactor(0);
+    this.add.text(cx, cy, 'YOU WIN!', {
+      fontFamily: 'Fredoka One', fontSize: '72px',
+      color: '#FFD700', stroke: '#000', strokeThickness: 8,
+    }).setDepth(21).setOrigin(0.5).setScrollFactor(0);
+    this.add.text(cx, cy + 90, 'All levels complete!', {
+      fontFamily: 'Fredoka One', fontSize: '32px',
+      color: '#FFFFFF', stroke: '#000', strokeThickness: 4,
+    }).setDepth(21).setOrigin(0.5).setScrollFactor(0);
+
+    const btn = this.add.text(cx, cy + 160, '▶ Play Again', {
+      fontFamily: 'Fredoka One', fontSize: '36px',
+      color: '#00FF88', stroke: '#000', strokeThickness: 4,
+      backgroundColor: '#00000060',
+      padding: { x: 24, y: 12 },
+    }).setDepth(21).setOrigin(0.5).setScrollFactor(0).setInteractive({ useHandCursor: true });
+
+    btn.on('pointerover', () => btn.setScale(1.1));
+    btn.on('pointerout',  () => btn.setScale(1.0));
+    btn.on('pointerdown', () => this.scene.restart({ level: 0 }));
+
+    this.winConfettiTimer = this.time.addEvent({
+      delay: 80, repeat: 60, callback: this.spawnWinConfetti, callbackScope: this,
+    });
+  }
+
+  spawnWinConfetti() {
+    const colors = [0xFF85A1, 0xFFD700, 0xC77DFF, 0x7BC67E, 0x87CEEB, 0xFF6B6B];
+    const g = this.add.rectangle(
+      Phaser.Math.Between(0, 800), -10,
+      Phaser.Math.Between(8, 16), Phaser.Math.Between(8, 16),
+      colors[Phaser.Math.Between(0, colors.length - 1)]
+    ).setDepth(22).setScrollFactor(0);
+    this.tweens.add({
+      targets: g, y: 620,
+      rotation: Phaser.Math.Between(0, 6),
+      duration: Phaser.Math.Between(1500, 3000),
+      onComplete: () => g.destroy(),
+    });
+  }
+
+  spawnSparkle(x, y) {
+    const emojis = ['✨', '⭐', '💫'];
+    for (let i = 0; i < 3; i++) {
+      const txt = this.add.text(
+        x + Phaser.Math.Between(-20, 20),
+        y + Phaser.Math.Between(-20, 0),
+        emojis[i % emojis.length],
+        { fontSize: '22px' }
+      ).setDepth(15);
+      this.tweens.add({
+        targets: txt,
+        y: txt.y - 50,
+        alpha: 0,
+        duration: 700,
+        ease: 'Power2',
+        onComplete: () => txt.destroy(),
+      });
+    }
+  }
+
+  update() {
+    if (this._transitioning) return;
+
+    const left  = this.cursors.left.isDown  || this.wasd.left.isDown;
+    const right = this.cursors.right.isDown || this.wasd.right.isDown;
+    const jump  = Phaser.Input.Keyboard.JustDown(this.cursors.up)
+               || Phaser.Input.Keyboard.JustDown(this.wasd.up)
+               || Phaser.Input.Keyboard.JustDown(this.spaceKey);
+
+    const onGround = this.player.body.blocked.down;
+    const speed = 200;
+
+    if (left) {
+      this.player.setVelocityX(-speed);
+      this.player.setFlipX(true);
+    } else if (right) {
+      this.player.setVelocityX(speed);
+      this.player.setFlipX(false);
+    } else {
+      this.player.setVelocityX(0);
+    }
+
+    if (jump && onGround) {
+      this.player.setVelocityY(-540);
+    }
+
+    // Clamp to left edge of world
+    if (this.player.x < 20) this.player.setX(20);
+
+    // Animate player
+    if (!onGround) {
+      this.player.setTexture('player_jump');
+    } else if (left || right) {
+      const frame = Math.floor(this.time.now / 150) % 2 === 0 ? 'player_walk1' : 'player_walk2';
+      this.player.setTexture(frame);
+    } else {
+      this.player.setTexture('player');
+    }
+
+    // Enemy patrol
+    for (const enemy of this.enemyGroup.getChildren()) {
+      if (enemy.x >= enemy.patrolMax) {
+        enemy.setVelocityX(-enemy.patrolSpeed);
+        enemy.setFlipX(true);
+      } else if (enemy.x <= enemy.patrolMin) {
+        enemy.setVelocityX(enemy.patrolSpeed);
+        enemy.setFlipX(false);
+      }
+    }
+
+    // Coin spin via scale pulse
+    const pulse = 0.85 + 0.15 * Math.sin(this.time.now / 200);
+    this.coinGroup.getChildren().forEach(c => c.setScale(pulse));
+
+    // Fall off world → restart level
+    const lvl = LEVELS[this.levelIndex];
+    if (this.player.y > lvl.worldH * TILE + TILE * 4) {
+      this.scene.restart({ level: this.levelIndex });
+    }
+  }
+}
+
+
+// ── Texture factory ────────────────────────────────────────
+function makeTextures(scene) {
+  const g = scene.make.graphics({ x: 0, y: 0, add: false });
+
+  // Platform tile (40×40)
+  function makePlatformTile() {
+    g.clear();
+    g.fillStyle(C.platform);
+    g.fillRect(0, 0, TILE, TILE);
+    g.fillStyle(C.platformEdge);
+    g.fillRect(0, 0, TILE, 6);
+    g.fillStyle(0xffffff, 0.15);
+    g.fillRect(2, 2, TILE - 4, 3);
+    g.generateTexture('platform_tile', TILE, TILE);
+  }
+
+  // Player standing (40×44)
+  function makePlayer(key, legOffset = 0) {
+    g.clear();
+    // body
+    g.fillStyle(C.player);
+    g.fillRoundedRect(6, 8, 28, 26, 8);
+    // head
+    g.fillStyle(C.player);
+    g.fillCircle(20, 10, 14);
+    // eye
+    g.fillStyle(0x000000);
+    g.fillCircle(25, 8, 4);
+    g.fillStyle(C.playerEye);
+    g.fillCircle(26, 7, 2);
+    // legs
+    g.fillStyle(0xC0507A);
+    g.fillRect(10, 34 + legOffset,  8, 8);
+    g.fillRect(22, 34 - legOffset, 8, 8);
+    g.generateTexture(key, 40, 44);
+  }
+
+  // Coin (32×32)
+  function makeCoin() {
+    g.clear();
+    g.fillStyle(C.coin);
+    g.fillCircle(16, 16, 15);
+    g.fillStyle(C.coinShine);
+    g.fillCircle(11, 11, 6);
+    g.fillStyle(0xB8860B, 0.4);
+    g.fillCircle(16, 16, 15);
+    g.fillStyle(C.coin);
+    g.fillCircle(16, 16, 12);
+    g.fillStyle(0xFFFFAA);
+    g.fillCircle(11, 11, 5);
+    g.generateTexture('coin', 32, 32);
+  }
+
+  // Door closed (40×80)
+  function makeDoor(open) {
+    g.clear();
+    const key = open ? 'door_open' : 'door_closed';
+    // frame
+    g.fillStyle(C.doorFrame);
+    g.fillRect(0, 0, 40, 80);
+    if (open) {
+      // dark interior
+      g.fillStyle(0x111111);
+      g.fillRect(5, 4, 30, 70);
+      // glow
+      g.fillStyle(C.doorGlow, 0.6);
+      g.fillRect(5, 4, 30, 70);
+      // sparkle hint
+      g.fillStyle(0xffffff);
+      g.fillRect(17, 30, 6, 6);
+    } else {
+      // door face
+      g.fillStyle(C.door);
+      g.fillRect(5, 4, 30, 70);
+      // panel detail
+      g.fillStyle(0x6B3410);
+      g.fillRect(8, 8, 12, 20);
+      g.fillRect(8, 32, 12, 20);
+      g.fillRect(22, 8, 12, 20);
+      g.fillRect(22, 32, 12, 20);
+      // knob
+      g.fillStyle(0xFFD700);
+      g.fillCircle(31, 40, 4);
+    }
+    g.generateTexture(key, 40, 80);
+  }
+
+  // Enemy (40×40)
+  function makeEnemy() {
+    g.clear();
+    // body
+    g.fillStyle(0xFF3333);
+    g.fillRoundedRect(6, 14, 28, 22, 7);
+    // head
+    g.fillStyle(0xFF3333);
+    g.fillCircle(20, 16, 13);
+    // horns
+    g.fillStyle(0xFF8800);
+    g.fillTriangle(11, 5, 7, 16, 15, 16);
+    g.fillTriangle(29, 5, 25, 16, 33, 16);
+    // eyes (angry — shifted inward)
+    g.fillStyle(0xFFFFFF);
+    g.fillCircle(15, 14, 5);
+    g.fillCircle(25, 14, 5);
+    g.fillStyle(0x000000);
+    g.fillCircle(16, 15, 3);
+    g.fillCircle(26, 15, 3);
+    // angry brow wedges
+    g.fillStyle(0x880000);
+    g.fillTriangle(10, 8, 20, 8, 12, 11);
+    g.fillTriangle(30, 8, 20, 8, 28, 11);
+    // feet
+    g.fillStyle(0xCC2200);
+    g.fillRect(9,  34, 9, 6);
+    g.fillRect(22, 34, 9, 6);
+    g.generateTexture('enemy', 40, 40);
+  }
+
+  makePlatformTile();
+  makePlayer('player', 0);
+  makePlayer('player_walk1', -3);
+  makePlayer('player_walk2', 3);
+  makePlayer('player_jump', -5);
+  makeCoin();
+  makeDoor(false);
+  makeDoor(true);
+  makeEnemy();
+  g.destroy();
+}
+
+// ── Game config ─────────────────────────────────────────────
+const config = {
+  type: Phaser.AUTO,
+  width:  800,
+  height: 600,
+  parent: 'game-container',
+  backgroundColor: '#87CEEB',
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { y: 1000 },
+      debug: false,
+    },
+  },
+  scene: [BootScene, GameScene],
+};
+
+new Phaser.Game(config);
+</script>
+</body>
+</html>

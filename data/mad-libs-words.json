@@ -1,0 +1,200 @@
+{
+  "_comment": "Each entry: emoji, singular (required), plural (optional — omit for mass/uncountable nouns).",
+
+  "noun": [
+    {"emoji":"🐶","singular":"puppy","plural":"puppies"},
+    {"emoji":"👸","singular":"princess","plural":"princesses"},
+    {"emoji":"🦁","singular":"lion","plural":"lions"},
+    {"emoji":"🧙","singular":"wizard","plural":"wizards"},
+    {"emoji":"🤖","singular":"robot","plural":"robots"},
+    {"emoji":"🐸","singular":"frog","plural":"frogs"},
+    {"emoji":"🦄","singular":"unicorn","plural":"unicorns"},
+    {"emoji":"🐲","singular":"dragon","plural":"dragons"},
+    {"emoji":"🧚","singular":"fairy","plural":"fairies"},
+    {"emoji":"🦸","singular":"superhero","plural":"superheroes"},
+    {"emoji":"🐨","singular":"koala","plural":"koalas"},
+    {"emoji":"🧝","singular":"elf","plural":"elves"}
+  ],
+
+  "character": [
+    {"emoji":"👸","singular":"princess","plural":"princesses"},
+    {"emoji":"🧙","singular":"wizard","plural":"wizards"},
+    {"emoji":"🤖","singular":"robot","plural":"robots"},
+    {"emoji":"🧚","singular":"fairy","plural":"fairies"},
+    {"emoji":"🦸","singular":"superhero","plural":"superheroes"},
+    {"emoji":"🧝","singular":"elf","plural":"elves"},
+    {"emoji":"🏴‍☠️","singular":"pirate","plural":"pirates"},
+    {"emoji":"👨‍🚀","singular":"astronaut","plural":"astronauts"},
+    {"emoji":"🧜","singular":"mermaid","plural":"mermaids"},
+    {"emoji":"🦹","singular":"villain","plural":"villains"},
+    {"emoji":"🧞","singular":"genie","plural":"genies"},
+    {"emoji":"🤠","singular":"cowboy","plural":"cowboys"},
+    {"emoji":"🧑‍🍳","singular":"chef","plural":"chefs"},
+    {"emoji":"🧑‍🔬","singular":"scientist","plural":"scientists"}
+  ],
+
+  "creature": [
+    {"emoji":"🐶","singular":"puppy","plural":"puppies"},
+    {"emoji":"🐱","singular":"kitten","plural":"kittens"},
+    {"emoji":"🦁","singular":"lion","plural":"lions"},
+    {"emoji":"🐸","singular":"frog","plural":"frogs"},
+    {"emoji":"🦊","singular":"fox","plural":"foxes"},
+    {"emoji":"🐼","singular":"panda","plural":"pandas"},
+    {"emoji":"🦄","singular":"unicorn","plural":"unicorns"},
+    {"emoji":"🐲","singular":"dragon","plural":"dragons"},
+    {"emoji":"🐨","singular":"koala","plural":"koalas"},
+    {"emoji":"🦋","singular":"butterfly","plural":"butterflies"},
+    {"emoji":"🐻","singular":"bear","plural":"bears"},
+    {"emoji":"🦒","singular":"giraffe","plural":"giraffes"},
+    {"emoji":"🐘","singular":"elephant","plural":"elephants"},
+    {"emoji":"🦓","singular":"zebra","plural":"zebras"}
+  ],
+
+  "animal": [
+    {"emoji":"🐶","singular":"dog","plural":"dogs"},
+    {"emoji":"🐱","singular":"cat","plural":"cats"},
+    {"emoji":"🐰","singular":"bunny","plural":"bunnies"},
+    {"emoji":"🦜","singular":"parrot","plural":"parrots"},
+    {"emoji":"🐠","singular":"goldfish","plural":"goldfish"},
+    {"emoji":"🦎","singular":"lizard","plural":"lizards"},
+    {"emoji":"🐹","singular":"hamster","plural":"hamsters"},
+    {"emoji":"🐢","singular":"tortoise","plural":"tortoises"},
+    {"emoji":"🐍","singular":"snake","plural":"snakes"},
+    {"emoji":"🦔","singular":"hedgehog","plural":"hedgehogs"},
+    {"emoji":"🐇","singular":"rabbit","plural":"rabbits"},
+    {"emoji":"🦩","singular":"flamingo","plural":"flamingos"}
+  ],
+
+  "place": [
+    {"emoji":"🏰","singular":"castle","plural":"castles"},
+    {"emoji":"🌲","singular":"magic forest"},
+    {"emoji":"🌊","singular":"ocean","plural":"oceans"},
+    {"emoji":"🌙","singular":"moon"},
+    {"emoji":"🏔️","singular":"mountain","plural":"mountains"},
+    {"emoji":"🍬","singular":"candy land"},
+    {"emoji":"🌈","singular":"rainbow land"},
+    {"emoji":"☁️","singular":"cloud kingdom"},
+    {"emoji":"🏝️","singular":"tropical island"},
+    {"emoji":"🌺","singular":"enchanted garden"},
+    {"emoji":"🌌","singular":"galaxy","plural":"galaxies"},
+    {"emoji":"🏜️","singular":"desert","plural":"deserts"},
+    {"emoji":"🧊","singular":"ice palace"},
+    {"emoji":"🌋","singular":"volcano","plural":"volcanoes"}
+  ],
+
+  "object": [
+    {"emoji":"🍭","singular":"lollipop","plural":"lollipops"},
+    {"emoji":"🎈","singular":"balloon","plural":"balloons"},
+    {"emoji":"☂️","singular":"umbrella","plural":"umbrellas"},
+    {"emoji":"🔮","singular":"crystal ball","plural":"crystal balls"},
+    {"emoji":"🎩","singular":"magic hat","plural":"magic hats"},
+    {"emoji":"🧸","singular":"teddy bear","plural":"teddy bears"},
+    {"emoji":"📚","singular":"big book","plural":"big books"},
+    {"emoji":"🎸","singular":"guitar","plural":"guitars"},
+    {"emoji":"💎","singular":"gem","plural":"gems"},
+    {"emoji":"🗝️","singular":"golden key","plural":"golden keys"},
+    {"emoji":"🪄","singular":"magic wand","plural":"magic wands"},
+    {"emoji":"🎭","singular":"mask","plural":"masks"},
+    {"emoji":"🧲","singular":"magnet","plural":"magnets"},
+    {"emoji":"🌟","singular":"magic star","plural":"magic stars"}
+  ],
+
+  "food": [
+    {"emoji":"🍪","singular":"cookie","plural":"cookies"},
+    {"emoji":"🍕","singular":"pizza"},
+    {"emoji":"🍦","singular":"ice cream"},
+    {"emoji":"🍓","singular":"strawberry","plural":"strawberries"},
+    {"emoji":"🧁","singular":"cupcake","plural":"cupcakes"},
+    {"emoji":"🍩","singular":"donut","plural":"donuts"},
+    {"emoji":"🌮","singular":"taco","plural":"tacos"},
+    {"emoji":"🍫","singular":"chocolate"},
+    {"emoji":"🥞","singular":"pancake","plural":"pancakes"},
+    {"emoji":"🍉","singular":"watermelon","plural":"watermelons"},
+    {"emoji":"🍰","singular":"slice of cake","plural":"slices of cake"},
+    {"emoji":"🍟","singular":"chip","plural":"chips"},
+    {"emoji":"🍿","singular":"popcorn"},
+    {"emoji":"🥐","singular":"croissant","plural":"croissants"}
+  ],
+
+  "drink": [
+    {"emoji":"🥛","singular":"warm milk"},
+    {"emoji":"☕","singular":"hot cocoa"},
+    {"emoji":"🍋","singular":"lemon tea"},
+    {"emoji":"🍓","singular":"berry smoothie"},
+    {"emoji":"🍊","singular":"orange juice"},
+    {"emoji":"🫖","singular":"herbal tea"},
+    {"emoji":"🍵","singular":"chamomile tea"},
+    {"emoji":"🧃","singular":"apple juice"}
+  ],
+
+  "verb": [
+    {"emoji":"💃","singular":"danced"},
+    {"emoji":"🤸","singular":"somersaulted"},
+    {"emoji":"🏃","singular":"ran"},
+    {"emoji":"🤣","singular":"giggled"},
+    {"emoji":"🚀","singular":"zoomed"},
+    {"emoji":"🧗","singular":"climbed"},
+    {"emoji":"🤫","singular":"sneaked"},
+    {"emoji":"🌪️","singular":"spun around"},
+    {"emoji":"🎵","singular":"sang"},
+    {"emoji":"🏊","singular":"swam"},
+    {"emoji":"🦘","singular":"bounced"},
+    {"emoji":"🕺","singular":"wiggled"},
+    {"emoji":"🎉","singular":"celebrated"},
+    {"emoji":"🏄","singular":"surfed"}
+  ],
+
+  "adj": [
+    {"emoji":"✨","singular":"sparkly"},
+    {"emoji":"🌈","singular":"rainbow-coloured"},
+    {"emoji":"🦄","singular":"magical"},
+    {"emoji":"🍬","singular":"sweet"},
+    {"emoji":"🌊","singular":"wiggly"},
+    {"emoji":"☁️","singular":"fluffy"},
+    {"emoji":"🌙","singular":"dreamy"},
+    {"emoji":"🌺","singular":"silly"},
+    {"emoji":"⚡","singular":"super speedy"},
+    {"emoji":"🔥","singular":"fiery"},
+    {"emoji":"❄️","singular":"icy"},
+    {"emoji":"🌟","singular":"glittery"},
+    {"emoji":"🎨","singular":"colourful"},
+    {"emoji":"🦋","singular":"tiny"}
+  ],
+
+  "vehicle": [
+    {"emoji":"🚀","singular":"rocket","plural":"rockets"},
+    {"emoji":"🛸","singular":"spaceship","plural":"spaceships"},
+    {"emoji":"🎠","singular":"flying carousel"},
+    {"emoji":"🌈","singular":"rainbow slide"},
+    {"emoji":"🪂","singular":"giant parachute"},
+    {"emoji":"🛺","singular":"magic cart"},
+    {"emoji":"🎈","singular":"hot air balloon"},
+    {"emoji":"🎪","singular":"flying circus tent"}
+  ],
+
+  "sea": [
+    {"emoji":"🦈","singular":"shark","plural":"sharks"},
+    {"emoji":"🐙","singular":"octopus","plural":"octopuses"},
+    {"emoji":"🐠","singular":"clownfish","plural":"clownfish"},
+    {"emoji":"🦭","singular":"seal","plural":"seals"},
+    {"emoji":"🐚","singular":"giant shell"},
+    {"emoji":"🪸","singular":"coral reef"},
+    {"emoji":"🐬","singular":"dolphin","plural":"dolphins"},
+    {"emoji":"🦀","singular":"crab","plural":"crabs"},
+    {"emoji":"🐡","singular":"puffer fish","plural":"puffer fish"},
+    {"emoji":"🐳","singular":"whale","plural":"whales"},
+    {"emoji":"🦑","singular":"squid","plural":"squid"},
+    {"emoji":"🌟","singular":"starfish","plural":"starfish"}
+  ],
+
+  "climbable": [
+    {"emoji":"🏔️","singular":"tall mountain"},
+    {"emoji":"🌲","singular":"giant tree"},
+    {"emoji":"🌱","singular":"magic beanstalk"},
+    {"emoji":"🪜","singular":"tall ladder"},
+    {"emoji":"🗼","singular":"tall tower"},
+    {"emoji":"🧗","singular":"steep cliff"},
+    {"emoji":"🏰","singular":"castle wall"},
+    {"emoji":"🌴","singular":"tall palm tree"}
+  ]
+}

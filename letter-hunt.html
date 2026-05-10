@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Letter Hunt! 🔍</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: linear-gradient(180deg, #87CEEB 0%, #B8E4F9 55%, #7EC850 55%, #5AAB3A 100%);
+  min-height: 100vh; overflow: hidden; user-select: none;
+}
+/* Clouds */
+.cloud { position: absolute; background: white; border-radius: 50px; opacity: .85; }
+.cloud::before,.cloud::after { content:''; position:absolute; background:white; border-radius:50%; }
+#c1{width:120px;height:40px;top:8%;left:5%}
+#c1::before{width:60px;height:60px;top:-30px;left:15px}
+#c1::after{width:45px;height:45px;top:-20px;left:50px}
+#c2{width:90px;height:30px;top:15%;right:10%}
+#c2::before{width:45px;height:45px;top:-22px;left:10px}
+#c2::after{width:35px;height:35px;top:-16px;left:38px}
+/* HUD */
+#hud {
+  position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+  z-index: 100; display: flex; gap: 16px; align-items: center;
+  font-family: 'Fredoka One', sans-serif;
+}
+.pill {
+  background: rgba(255,255,255,.92); border-radius: 50px;
+  padding: 8px 20px; font-size: 1.1rem; color: #2D1B69;
+  box-shadow: 0 4px 16px rgba(0,0,0,.1);
+}
+.pill span { color: #FF85A1; }
+/* Target letter display */
+#target-box {
+  position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+  text-align: center; z-index: 100;
+}
+#target-letter {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: clamp(5rem, 15vw, 9rem);
+  color: white;
+  text-shadow: 0 6px 24px rgba(0,0,0,.2);
+  animation: letterPop .4s cubic-bezier(.175,.885,.32,1.275);
+  display: block;
+}
+@keyframes letterPop {
+  from { transform: scale(.3); opacity: 0; }
+  to   { transform: scale(1);  opacity: 1; }
+}
+/* Say it button */
+#say-btn {
+  margin-top: 12px;
+  background: white; color: #2D1B69;
+  border: none; border-radius: 50px;
+  padding: 10px 28px; font-family: 'Fredoka One', sans-serif;
+  font-size: 1.2rem; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+  transition: transform .15s;
+}
+#say-btn:hover { transform: scale(1.08); }
+/* Letter tiles */
+.tile {
+  position: absolute;
+  width: clamp(80px, 12vw, 110px);
+  height: clamp(80px, 12vw, 110px);
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fredoka One', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 6px 0 rgba(0,0,0,.2);
+  transition: transform .1s, box-shadow .1s;
+  user-select: none;
+  animation: tileIn .4s cubic-bezier(.175,.885,.32,1.275) backwards;
+}
+.tile:hover { transform: translateY(-4px); box-shadow: 0 10px 0 rgba(0,0,0,.15); }
+.tile:active { transform: translateY(2px); box-shadow: 0 3px 0 rgba(0,0,0,.2); }
+.tile.correct {
+  animation: correctFlash .5s forwards !important;
+}
+.tile.wrong {
+  animation: wrongShake .5s forwards !important;
+}
+@keyframes tileIn {
+  from { transform: scale(.3) rotate(-10deg); opacity: 0; }
+  to   { transform: scale(1)  rotate(0deg);  opacity: 1; }
+}
+@keyframes correctFlash {
+  0%   { transform: scale(1); background: inherit; }
+  30%  { transform: scale(1.3); background: #2ecc71 !important; }
+  100% { transform: scale(0); opacity: 0; }
+}
+@keyframes wrongShake {
+  0%,100% { transform: translateX(0); }
+  20%      { transform: translateX(-10px); }
+  40%      { transform: translateX(10px); }
+  60%      { transform: translateX(-8px); }
+  80%      { transform: translateX(8px); }
+}
+/* Feedback popup */
+#feedback {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  font-family: 'Fredoka One', sans-serif; font-size: clamp(1.5rem, 5vw, 3rem);
+  color: white; text-shadow: 0 3px 12px rgba(0,0,0,.3);
+  pointer-events: none; z-index: 900;
+  animation: feedbackPop .6s forwards;
+  display: none;
+}
+@keyframes feedbackPop {
+  0%   { transform: translate(-50%,-50%) scale(.5); opacity: 1; }
+  70%  { transform: translate(-50%,-65%) scale(1.1); opacity: 1; }
+  100% { transform: translate(-50%,-80%) scale(1); opacity: 0; }
+}
+/* Sparkle */
+.sparkle {
+  position: fixed; pointer-events: none; z-index: 9998; font-size: 2rem;
+  animation: sparkOut .9s ease-out forwards;
+}
+@keyframes sparkOut {
+  0%   { transform: translate(-50%,-50%) scale(.5); opacity: 1; }
+  100% { transform: translate(-50%,-120%) scale(1.5); opacity: 0; }
+}
+/* Confetti */
+.confetti-piece {
+  position: fixed; width: 12px; height: 12px;
+  pointer-events: none; z-index: 9999; top: 0;
+  animation: confettiFall ease-in forwards;
+}
+@keyframes confettiFall {
+  0%   { transform: translateY(-20px) rotate(0); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+/* Back home */
+.home-btn {
+  position: fixed; bottom: 20px; left: 20px; z-index: 1000;
+  background: rgba(255,255,255,.85); backdrop-filter: blur(8px);
+  border: 2px solid rgba(0,0,0,.1); border-radius: 50px;
+  padding: 10px 22px; font-family: 'Nunito', sans-serif;
+  font-size: 1rem; font-weight: 800; color: #2D1B69;
+  cursor: pointer; text-decoration: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15); transition: all .2s;
+}
+.home-btn:hover { transform: scale(1.05); background: white; }
+</style>
+</head>
+<body>
+
+<div class="cloud" id="c1"></div>
+<div class="cloud" id="c2"></div>
+
+<div id="hud">
+  <div class="pill">⭐ <span id="score">0</span></div>
+  <div class="pill">🔥 <span id="streak">0</span></div>
+</div>
+
+<div id="target-box">
+  <span id="target-letter">A</span>
+  <button id="say-btn" onclick="sayLetter()">🔊 Say it again!</button>
+</div>
+
+<div id="feedback"></div>
+<a class="home-btn" href="index.html">🏠 Home</a>
+
+<script>
+const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const COLORS = [
+  '#FF6B6B','#FF9F43','#FECA57','#48DBFB',
+  '#FF9FF3','#54A0FF','#5F27CD','#1DD1A1',
+  '#C77DFF','#FF85A1','#FFA552','#7BC67E',
+];
+const FEEDBACK_CORRECT = ['Amazing! 🌟','Brilliant! 🎉','Wow! 💫','Yes! ⭐','Perfect! 🎊'];
+const FEEDBACK_WRONG   = ['Oops! Try again 😊','Not that one! 🙈','Keep looking! 👀'];
+
+let score = 0, streak = 0, answered = false;
+let target = '';
+
+const scoreEl  = document.getElementById('score');
+const streakEl = document.getElementById('streak');
+const targetEl = document.getElementById('target-letter');
+const feedback = document.getElementById('feedback');
+
+function shuffle(arr) { return [...arr].sort(()=>Math.random()-.5); }
+
+function sayLetter() {
+  if (!('speechSynthesis' in window)) return;
+  const u = new SpeechSynthesisUtterance(`Find the letter ${target}`);
+  u.rate = .85; u.pitch = 1.3; u.volume = 1;
+  speechSynthesis.cancel();
+  const voices = speechSynthesis.getVoices().filter(v=>v.lang.startsWith('en'));
+  if (voices.length) u.voice = voices.find(v=>v.name.includes('female')||v.name.includes('Female')) || voices[0];
+  speechSynthesis.speak(u);
+}
+
+function newRound() {
+  answered = false;
+  document.querySelectorAll('.tile').forEach(t=>t.remove());
+
+  target = LETTERS[Math.floor(Math.random()*LETTERS.length)];
+  targetEl.textContent = target;
+  targetEl.style.animation = 'none';
+  void targetEl.offsetWidth;
+  targetEl.style.animation = '';
+
+  // 5 tiles: 1 correct + 4 random distractors
+  const distractors = shuffle(LETTERS.filter(l=>l!==target)).slice(0,4);
+  const pool = shuffle([target, ...distractors]);
+  const colors = shuffle(COLORS);
+  const tileSize = Math.min(110, window.innerWidth * .12);
+
+  pool.forEach((letter, i) => {
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+    tile.textContent = letter;
+    tile.style.background = colors[i % colors.length];
+    tile.style.animationDelay = (i * .08) + 's';
+
+    // Random non-overlapping position in lower 55% of screen
+    let x, y, tries = 0;
+    do {
+      x = Math.random() * (window.innerWidth  - tileSize - 40) + 20;
+      y = Math.random() * (window.innerHeight * .45 - tileSize) + window.innerHeight * .42;
+      tries++;
+    } while (tries < 50);
+
+    tile.style.left = x + 'px';
+    tile.style.top  = y + 'px';
+
+    tile.addEventListener('click', () => onTileClick(tile, letter, x, y, tileSize));
+    document.body.appendChild(tile);
+  });
+
+  setTimeout(sayLetter, 400);
+}
+
+function onTileClick(tile, letter, x, y, size) {
+  if (answered) return;
+  if (letter === target) {
+    answered = true;
+    tile.classList.add('correct');
+    streak++; score += 10 + streak * 2;
+    scoreEl.textContent = score;
+    streakEl.textContent = streak;
+    showFeedback(true, x+size/2, y+size/2);
+    spawnSparkles(x+size/2, y+size/2);
+    if (score % 50 === 0) spawnConfetti();
+    setTimeout(newRound, 1000);
+  } else {
+    streak = 0; streakEl.textContent = 0;
+    tile.classList.add('wrong');
+    showFeedback(false, x+size/2, y+size/2);
+    setTimeout(() => { tile.classList.remove('wrong'); }, 550);
+  }
+}
+
+function showFeedback(correct, x, y) {
+  const msgs = correct ? FEEDBACK_CORRECT : FEEDBACK_WRONG;
+  feedback.textContent = msgs[Math.floor(Math.random()*msgs.length)];
+  feedback.style.display = 'block';
+  feedback.style.animation = 'none';
+  void feedback.offsetWidth;
+  feedback.style.animation = '';
+  setTimeout(() => { feedback.style.display = 'none'; }, 700);
+}
+
+function spawnSparkles(x, y) {
+  ['✨','🌟','💫','⭐'].forEach(emoji => {
+    const s = document.createElement('div');
+    s.className = 'sparkle'; s.textContent = emoji;
+    s.style.left = (x + (Math.random()-.5)*60) + 'px';
+    s.style.top  = (y + (Math.random()-.5)*60) + 'px';
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(), 1000);
+  });
+}
+
+function spawnConfetti() {
+  const colors = ['#FF85A1','#FFD700','#C77DFF','#7BC67E','#87CEEB','#FFA552'];
+  for (let i=0;i<50;i++) {
+    const p = document.createElement('div');
+    p.className='confetti-piece';
+    p.style.left=Math.random()*100+'vw';
+    p.style.background=colors[~~(Math.random()*colors.length)];
+    p.style.borderRadius=Math.random()>.5?'50%':'2px';
+    p.style.animationDuration=(1.5+Math.random()*2)+'s';
+    p.style.animationDelay=Math.random()*.5+'s';
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),3500);
+  }
+}
+
+// Preload voices
+if ('speechSynthesis' in window) {
+  speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+}
+
+newRound();
+</script>
+</body>
+</html>
