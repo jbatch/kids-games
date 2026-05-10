@@ -15,13 +15,13 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
       - name: Use Node.js 20
         uses: actions/setup-node@v2
         with:
           node-version: 20
           cache: "pnpm"
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
       - name: Install dependencies
         run: pnpm install
       - name: Build static files
